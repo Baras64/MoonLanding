@@ -1,0 +1,32 @@
+name: moonlander
+channels:
+  - defaults
+dependencies:
+  - ca-certificates=2023.08.22=hecd8cb5_0
+  - libcxx=14.0.6=h9765a3e_0
+  - libedit=3.1.20221030=h6c40b1e_0
+  - libffi=3.2.1=h0a44026_1007
+  - ncurses=6.4=hcec6c5f_0
+  - openssl=1.1.1w=hca72f7f_0
+  - pip=23.2.1=py38hecd8cb5_0
+  - python=3.8.0=h359304d_2
+  - readline=7.0=h1de35cc_5
+  - setuptools=68.0.0=py38hecd8cb5_0
+  - sqlite=3.33.0=hffcf06c_0
+  - tk=8.6.12=h5d9f67b_0
+  - wheel=0.41.2=py38hecd8cb5_0
+  - xz=5.4.2=h6c40b1e_0
+  - zlib=1.2.13=h4dc903c_0
+  - pip:
+    - box2d-py==2.3.5
+    - cloudpickle==2.2.1
+    - farama-notifications==0.0.4
+    - gymnasium==0.29.0
+    - importlib-metadata==6.8.0
+    - numpy==1.24.4
+    - pygame==2.5.2
+    - swig==4.1.1
+    - tqdm==4.66.1
+    - typing-extensions==4.8.0
+    - zipp==3.17.0
+prefix: /Users/aishikpyne/opt/anaconda3/envs/moonlander
