@@ -5,7 +5,7 @@ env_options = {
     "discreteaction-deterministic-fo": {
         "continuous": False,
         "stochastic": False,
-        "enable_wind": True,
+        "enable_wind": False,
         "wind_power": 0,
         "turbulence_power": 0,
         "partially_observable": False,
@@ -18,8 +18,16 @@ env_options = {
         "turbulence_power": 2,
         "partially_observable": False,
     },
+    "continuousaction-deterministic-fo": {
+        "continuous": True,
+        "stochastic": False,
+        "enable_wind": False,
+        "wind_power": 0,
+        "turbulence_power": 0,
+        "partially_observable": False,
+    },
     "continuousaction-stochastic-fo": {
-        "continuous": "continuous",
+        "continuous": True,
         "stochastic": True,
         "enable_wind": True,
         "wind_power": 15,
@@ -57,7 +65,7 @@ def get_eval_env(env_option, seed=24):
         wind_power = option['wind_power'],
         turbulence_power = option['turbulence_power'],
         partially_observable = option['partially_observable'],
-        render_mode="human"
+        render_mode=None
     )
     env._max_episode_steps = 300
     env.reset(seed=seed)
