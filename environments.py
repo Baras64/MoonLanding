@@ -18,7 +18,7 @@ env_options = {
         "turbulence_power": 2,
         "partially_observable": False,
     },
-    "continuous_action-stochastic-fo": {
+    "continuousaction-stochastic-fo": {
         "continuous": "continuous",
         "stochastic": True,
         "enable_wind": True,
