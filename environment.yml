@@ -29,4 +29,5 @@ dependencies:
     - tqdm==4.66.1
     - typing-extensions==4.8.0
     - zipp==3.17.0
+    - images2gif
 prefix: /Users/aishikpyne/opt/anaconda3/envs/moonlander

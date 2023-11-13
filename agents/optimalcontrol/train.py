@@ -56,6 +56,10 @@ class PIDOptimizationData():
         plt.ylabel('Score')
         plt.xlabel('Steps')
         plt.show()
+    
+    def save(self,filename):
+        """Save data to file"""
+        np.savez(filename, params=self.params, scores=self.scores, steps=self.steps)
 
 def pid(state, params):
     """ calculates settings based on pid control """
@@ -140,7 +144,7 @@ def main():
         enable_wind = False,
         wind_power = 0,
         turbulence_power = 0,
-        render_mode=None, # Turn off for training
+        render_mode = None,
         randomize_start = False,
         ref_lander = True
     )
@@ -151,42 +155,20 @@ def main():
 
 
     # Random Hill Climb over params
-    # params = np.array([0,0,0,0])
-    params = np.array([4.60245202, -3.57703678, -60.1764885, 40.0989124])
+    params = np.array([0,0,0,0])
     score, _ = run(params, env, True)
     print(f"Initial Score: {score}")
 
     optimization_logger = PIDOptimizationData()
-    for steps in range(50):
+    for steps in range(1500):
         params,score = optimize(params,score,env,steps+1)
         optimization_logger.add(params,score)
         if steps%10 == 0:
             print(f"Step: {steps} Score: {score}, Params: {params}")
     optimization_logger.graph()
 
-
-    # Evaluate Controller
-    env: LunarLander = gym.make(
-        "LunarLander-v2",
-        continuous = True,
-        gravity = -10.0,
-        enable_wind = False,
-        wind_power = 20,
-        turbulence_power = 2,
-        render_mode="human",
-        randomize_start = False,
-        ref_lander = True
-    )
-    env.reset(seed=0)
-
-
-    scores = []
-    for trial in range(10):
-        score, data = run(params, env, True)
-        scores.append(score)
-        data.graph()
-    env.close()
-    print(f"Average Score: {np.mean(scores)}" )
+    # Save optimization data
+    optimization_logger.save('pid_optimization.npz')
 
 if __name__ == '__main__':
     main()
