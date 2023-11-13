@@ -1,4 +1,5 @@
 import gymnasium as gym
+from agent import a_star_lunar_lander
 
 env = gym.make(
     "LunarLander-v2",
@@ -16,11 +17,14 @@ env.action_space.seed(42)
 
 observation, info = env.reset(seed=42)
 
-for _ in range(1000):
-    observation, reward, terminated, truncated, info = env.step(env.action_space.sample())
-    print(observation)
+path = a_star_lunar_lander(env)
 
-    if terminated or truncated:
-        observation, info = env.reset()
+if path is not None:
+    for state in path:
+        observation, reward, terminated, truncated, info = env.step(state)
+        print(observation)
+
+        if terminated or truncated:
+            observation, info = env.reset()
 
 env.close()

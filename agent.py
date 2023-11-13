@@ -12,16 +12,15 @@ class Node:
     def f(self):
         return self.g + self.h
 
-# Update the A* search function
 def a_star_lunar_lander(env):
-    start = custom_state_representation(env.reset())
-    goal = np.array([0, 0, 0, 0, 0, 0, 0, 0])
+    start_state = custom_state_representation(env.reset())
+    goal_state = np.array([0, 0, 0, 0, 0, 0, 0, 0])
 
     open_list = []
     closed_list = set()
 
-    start_node = Node(start)
-    goal_node = Node(goal)
+    start_node = Node(start_state)
+    goal_node = Node(goal_state)
 
     heapq.heappush(open_list, (start_node.f(), start_node))
 
@@ -39,8 +38,16 @@ def a_star_lunar_lander(env):
         closed_list.add(tuple(current_node.state))
 
         for action in range(env.action_space.n):
-            next_state, reward, done, info = env.step(action)  # Update variable names
+            result = env.step(action)
+
+            print("Result tuple:", result)
+
+            next_state, reward, done, _, _ = result
+
+            # Update state representation
             custom_state = custom_state_representation(next_state)
+
+            # Check if the updated state is in the closed list
             if tuple(custom_state) in closed_list:
                 continue
 
@@ -52,19 +59,29 @@ def a_star_lunar_lander(env):
             if tuple(custom_state) not in [item[1].state for item in open_list]:
                 heapq.heappush(open_list, (neighbor.f(), neighbor))
 
+            # Check if the episode is done after taking the action
+            if done:
+                return None  # or handle termination as needed
+
     return None
+
+
 
 
 def custom_state_representation(state):
     state_array = state[0]  # Extract the array part
-    # Extract individual components from the state_array
-    x, y, vx, vy, angle, v_angle, left_leg, right_leg = state_array
-    return np.array([x, y, vx, vy, angle, v_angle, left_leg, right_leg])
-
+    
+    # Check if state_array is iterable
+    if hasattr(state_array, '__iter__'):
+        # Extract individual components from the state_array
+        x, y, vx, vy, angle, v_angle, left_leg, right_leg = state_array[:8]
+        return np.array([x, y, vx, vy, angle, v_angle, left_leg, right_leg])
+    else:
+        # Handle the case when state_array is not iterable
+        return np.array([state_array])
 
 def custom_state_compare(state1, state2):
     return np.all(np.isclose(state1, state2, atol=0.01))
 
 env = gym.make('LunarLander-v2')
-
 path = a_star_lunar_lander(env)
