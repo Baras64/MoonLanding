@@ -234,6 +234,7 @@ class LunarLander(gym.Env, EzPickle):
         wind_power: float = 15.0,
         turbulence_power: float = 1.5,
         randomize_start: bool = False,
+        partially_observable: bool = False,
         ref_lander: bool = False
     ):
         EzPickle.__init__(
@@ -282,6 +283,7 @@ class LunarLander(gym.Env, EzPickle):
         self.particles = []
 
         self.randomize_start = randomize_start
+        self.partially_observable = partially_observable
         self.ref_lander = ref_lander
 
         self.prev_reward = None
@@ -408,7 +410,7 @@ class LunarLander(gym.Env, EzPickle):
 
         # Create Lander body
         initial_y = VIEWPORT_H / SCALE
-        initial_x = VIEWPORT_W / SCALE / 2
+        initial_x = VIEWPORT_W / SCALE / 2 + np.random.uniform(-VIEWPORT_W / SCALE, VIEWPORT_W / SCALE)
         self.lander: Box2D.b2Body = self.world.CreateDynamicBody(
             position=(initial_x, initial_y),
             angle=0.0,
@@ -477,7 +479,14 @@ class LunarLander(gym.Env, EzPickle):
 
         if self.render_mode == "human":
             self.render()
-        return self.step(np.array([0, 0]) if self.continuous else 0)[0], {}
+        
+        helipad_x1_cor = (self.helipad_x1 - VIEWPORT_W / SCALE / 2) / (VIEWPORT_W / SCALE / 2)
+        helipad_y_cor = (self.helipad_y - VIEWPORT_H / SCALE / 2) / (VIEWPORT_H / SCALE / 2)
+        helipad_x2_cor = (self.helipad_x2 - VIEWPORT_W / SCALE / 2) / (VIEWPORT_W / SCALE / 2)
+        info = {
+            "goal" : [helipad_x1_cor, helipad_y_cor, helipad_x2_cor, helipad_y_cor] # [x1, y1, x2, y2]
+        }
+        return self.step(np.array([0, 0]) if self.continuous else 0)[0], info
 
     def _create_particle(self, mass, x, y, ttl):
         p = self.world.CreateDynamicBody(
@@ -722,7 +731,22 @@ class LunarLander(gym.Env, EzPickle):
 
         if self.render_mode == "human":
             self.render()
-        return np.array(state, dtype=np.float32), reward, terminated, False, {}
+
+        if self.partially_observable:
+            # Add noise to position estimation
+            state[0] += np.random.normal(0, 0.01)
+            state[1] += np.random.normal(0, 0.01)
+            state[4] += np.random.normal(0, 0.01)
+
+            # Add noise to position differential estimation
+            state[2] += np.random.normal(0, 0.01)
+            state[3] += np.random.normal(0, 0.01)
+            state[5] += np.random.normal(0, 0.01)
+            
+        info = {
+            "goal" : [helipad_x1_cor, helipad_y_cor, helipad_x2_cor, helipad_y_cor] # [x1, y1, x2, y2]
+        }
+        return np.array(state, dtype=np.float32), reward, terminated, False, info
 
     def render(self):
         if self.render_mode is None:
