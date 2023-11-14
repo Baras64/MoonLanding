@@ -336,7 +336,7 @@ class PPOAgent:
                 self.env.render()
                 action = np.argmax(self.Actor.predict(state)[0])
                 # state, reward, done, _ = self.env.step(action)
-                next_state, reward, terminated, truncated, _  = self.env.step(action)
+                state, reward, terminated, truncated, _  = self.env.step(action)
                 done = terminated or truncated
                 state = np.reshape(state, [1, self.state_size[0]])
                 score += reward

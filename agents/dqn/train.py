@@ -47,8 +47,9 @@ def main(env_name):
     EPS_START = 0.9
     EPS_END = 0.05
     EPS_DECAY = 1000
-    TAU = 0.005
-    LR = 1e-4
+    # TAU = 0.005
+    TAU = 0.01
+    LR = 5e-4
 
     # Get number of actions from gym action space
     n_actions = env.action_space.n
@@ -129,7 +130,7 @@ def main(env_name):
         
         
     if torch.cuda.is_available():
-        num_episodes = 16000
+        num_episodes = 8000
     else:
         num_episodes = 50
         
@@ -172,6 +173,9 @@ def main(env_name):
             if done:
                 rewards_over_time.append(reward_per_time)
                 break
+            
+        # if i_episode % 5 == 0:
+        #     target_net.load_state_dict(policy_net.state_dict())
 
     print('Complete')
 

@@ -18,13 +18,13 @@ import numpy as np
 import json
 from tqdm import tqdm
 from environments import get_eval_env, env_options
-from agents import BaseAgent, OptimalControlAgent
+from agents import BaseAgent, OptimalControlAgent, DQNAgent, PPOAgentEval, PPOAgentCont
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=str, choices=list(env_options.keys()), required=True)
-    parser.add_argument("--agent", type=str, choices=["optimalcontrol", "hybridastar", "dqn", "ppo"], required=True)
+    parser.add_argument("--agent", type=str, choices=["optimalcontrol", "hybridastar", "dqn", "ppo", "ppo_continuous"], required=True)
     parser.add_argument("--episodes", type=int, required=False, default=10000)
 
     return parser.parse_args()
@@ -56,9 +56,14 @@ def main():
         elif args.agent == "hybridastar":
             raise NotImplementedError
         elif args.agent == "dqn":
-            raise NotImplementedError
+            agent: BaseAgent = DQNAgent(args.env)
+            scores = evaluate(agent, env, args)
         elif args.agent == "ppo":
-            raise NotImplementedError
+            agent: BaseAgent = PPOAgentEval(args.env, env)
+            scores = evaluate(agent, env, args)
+        elif args.agent == "ppo_continuous":
+            agent: BaseAgent = PPOAgentCont(args.env, env)
+            scores = evaluate(agent, env, args)
         
         # Save scores in a file as json with file name as env-agent
         with open(f"{args.env}-{args.agent}.json", "w") as f:
